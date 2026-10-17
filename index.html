@@ -1,5 +1,458 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#180609">
+<title>YUTA Solo Sort — 19 Songs</title>
+
+<style>
+:root {
+  --bg:#120509;
+  --surface:#210910;
+  --surface2:#321019;
+  --text:#fff5f6;
+  --muted:#d9aeb5;
+  --line:#63202e;
+  --accent:#e53958;
+  --accent2:#ff8195;
+  --gold:#f5d38b;
+}
+* { box-sizing:border-box; }
+html { min-height:100%; scroll-behavior:smooth; }
+body {
+  margin:0;
+  min-height:100vh;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:radial-gradient(ellipse at 50% -10%,#651626 0%,transparent 55%),var(--bg);
+}
+button { font:inherit; }
+button:focus-visible,a:focus-visible {
+  outline:3px solid var(--gold);
+  outline-offset:4px;
+}
+#app { min-height:100vh; padding:24px 16px 100px; }
+.wrap { width:min(820px,100%); margin:auto; }
+
+.hero {
+  min-height:310px;
+  display:flex;
+  align-items:flex-end;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  margin:0 0 24px;
+  padding:32px clamp(20px,5vw,38px);
+  border:1px solid #783043;
+  border-radius:26px;
+  background:
+    linear-gradient(0deg,rgba(20,3,9,.65),rgba(20,3,9,.10)),
+    url("./assets/yuta-hero.jpg") center 35% / cover no-repeat;
+  box-shadow:0 20px 55px #0006;
+}
+.hero-content { width:100%; position:relative; z-index:1; }
+.kicker {
+  font-size:11px;
+  letter-spacing:.23em;
+  text-transform:uppercase;
+  color:#f4b5c2;
+  font-weight:800;
+}
+h1 {
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(40px,9vw,72px);
+  line-height:.98;
+  margin:13px 0;
+  letter-spacing:-.045em;
+}
+h1 span { color:var(--gold); }
+.subtitle { color:#f0d6db; margin:0; font-size:14px; }
+.hero-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+.hero-tags span {
+  font-size:10px;
+  letter-spacing:.09em;
+  padding:7px 10px;
+  border:1px solid #ffffff36;
+  border-radius:99px;
+  background:#16060a99;
+}
+
+.card {
+  background:linear-gradient(145deg,#2a0c14f5,#1d080ff7);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:clamp(16px,4vw,28px);
+  box-shadow:0 18px 50px #0004;
+}
+.section-eyebrow {
+  color:var(--accent2);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  margin-bottom:7px;
+}
+.progress {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:11px;
+}
+.bar {
+  height:6px;
+  background:#4b1723;
+  border-radius:99px;
+  overflow:hidden;
+  margin-bottom:27px;
+}
+.bar i {
+  display:block;
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--accent),var(--gold));
+  border-radius:99px;
+  transition:width .25s;
+}
+.prompt {
+  text-align:center;
+  font-family:Georgia,serif;
+  font-size:clamp(20px,4vw,26px);
+  font-weight:700;
+  margin:0 0 8px;
+}
+.prompt-subtitle {
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  margin:0 0 22px;
+}
+
+/* SONG CHOICE BOXES */
+.choices {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.choice {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  min-width:0;
+  min-height:240px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  text-align:left;
+  border:1px solid #a34458;
+  border-radius:19px;
+  padding:18px;
+  background:
+    linear-gradient(0deg,rgba(15,3,8,.97),rgba(35,5,14,.18)),
+    linear-gradient(135deg,#581727,#260b13);
+  background-size:cover;
+  background-position:center;
+  color:white;
+  cursor:pointer;
+  transition:transform .18s,border-color .18s,box-shadow .18s;
+}
+.choice:hover {
+  transform:translateY(-4px);
+  border-color:var(--gold);
+  box-shadow:0 12px 32px #e5395835;
+}
+.choice:active { transform:scale(.98); }
+.song-title {
+  position:relative;
+  z-index:1;
+  width:100%;
+  overflow-wrap:anywhere;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+  font-size:clamp(19px,3.5vw,28px);
+  line-height:1.12;
+  text-shadow:0 2px 15px #000;
+}
+.song-number {
+  display:block;
+  font:800 10px system-ui,sans-serif;
+  letter-spacing:.2em;
+  color:var(--gold);
+  margin-bottom:8px;
+}
+.help {
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+  margin-top:18px;
+}
+.hidden { display:none!important; }
+
+/* WINNER */
+.winner {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  text-align:center;
+  padding:0 0 25px;
+  margin-bottom:30px;
+  border:1px solid #b74b62;
+  border-radius:22px;
+  background:#260811;
+  box-shadow:0 12px 38px #e5395820;
+}
+.winner-art {
+  min-height:260px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  align-items:center;
+  padding:30px 18px 22px;
+  background:
+    linear-gradient(0deg,#21060efc 0%,#21060e36 75%),
+    linear-gradient(135deg,#751a31,#280a13);
+  background-size:cover;
+  background-position:center;
+}
+.winner-label {
+  color:var(--gold);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.winner h2 {
+  font-family:Georgia,serif;
+  font-size:clamp(30px,7vw,48px);
+  overflow-wrap:anywhere;
+  margin:13px 0 8px;
+  line-height:1.06;
+}
+.winner-description { color:#f2dce1; margin:0 0 18px; font-size:13px; }
+.winner-link {
+  display:inline-block;
+  padding:12px 22px;
+  border-radius:99px;
+  background:var(--accent);
+  color:white;
+  text-decoration:none;
+  font-weight:800;
+  font-size:13px;
+  transition:.2s;
+}
+.winner-link:hover { background:var(--accent2); transform:translateY(-2px); }
+.results-heading { text-align:center; margin:28px 0 20px; }
+.results-heading h2 {
+  font-family:Georgia,serif;
+  font-size:clamp(28px,6vw,38px);
+  margin:0 0 8px;
+}
+.results-heading p { color:var(--muted); font-size:13px; line-height:1.6; margin:0; }
+
+/* RANKING */
+.rank {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #63202e88;
+}
+.rank-art {
+  width:57px;
+  height:57px;
+  flex-shrink:0;
+  border-radius:11px;
+  border:1px solid #a3445866;
+  background:linear-gradient(135deg,#68172c,#2b0a14);
+  background-size:cover;
+  background-position:center;
+}
+.num {
+  width:31px;
+  height:31px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  font-size:12px;
+  font-weight:900;
+  background:#4b131e;
+  color:#ffdce2;
+}
+.rank:first-child .num { background:var(--gold); color:#31101a; }
+.rank:nth-child(2) .num { background:#b8becb; color:#24121a; }
+.rank:nth-child(3) .num { background:#bf825c; color:#21100a; }
+.rank-info { flex:1; min-width:0; }
+.song { display:block; font-size:14px; font-weight:750; overflow-wrap:anywhere; }
+.rank-caption { display:block; color:var(--muted); font-size:10px; margin-top:4px; }
+.rating { color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; flex-shrink:0; }
+.actions { display:flex; justify-content:center; gap:10px; margin-top:24px; flex-wrap:wrap; }
+.secondary {
+  border:1px solid #803143;
+  background:#3a0d18;
+  color:var(--text);
+  border-radius:99px;
+  padding:11px 17px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:750;
+}
+.secondary:hover { border-color:var(--gold); background:#511020; }
+.note { margin-top:20px; font-size:10px; line-height:1.7; color:var(--muted); text-align:center; }
+.footer-note { text-align:center; color:#b88b95; font-size:10px; margin:23px 0 0; }
+
+/* MUSIC PLAYER */
+.music-dock {
+  position:fixed;
+  z-index:1000;
+  right:16px;
+  bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  max-width:calc(100vw - 24px);
+  padding:10px 14px;
+  border:1px solid #a34458;
+  border-radius:99px;
+  background:#19070df2;
+  color:var(--text);
+  box-shadow:0 8px 28px #0008;
+  backdrop-filter:blur(12px);
+}
+#music-toggle {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:0;
+  background:transparent;
+  color:var(--gold);
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+  cursor:pointer;
+}
+#music-icon { font-size:14px; }
+#music-track-label {
+  color:#d5b7bf;
+  font-size:10px;
+  max-width:135px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@media(max-width:560px) {
+  #app { padding:12px 11px 95px; }
+  .hero { min-height:255px; border-radius:20px; padding:24px 20px; }
+  .choices { grid-template-columns:1fr; }
+  .choice { min-height:175px; }
+  .card { border-radius:19px; }
+  .winner-art { min-height:225px; }
+  .rank { gap:8px; }
+  .rank-art { width:45px; height:50px; }
+  .rating { display:none; }
+  .music-dock { right:10px; bottom:10px; gap:7px; padding:9px 12px; }
+  #music-track-label { max-width:90px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; }
+}
+</style>
+</head>
+
+<body>
+<div class="music-dock" id="music-dock">
+  <button id="music-toggle" type="button" aria-pressed="false">
+    <span id="music-icon">▶</span>
+    <span id="music-label">Play music</span>
+  </button>
+  <span id="music-track-label">YUTA soundtrack</span>
+</div>
+
+<audio id="yuta-background" loop preload="none">
+  <source src="./assets/yuta-background.mp3" type="audio/mpeg">
+</audio>
+<audio id="yuta-winner" preload="none">
+  <source src="./assets/yuta-winner.mp3" type="audio/mpeg">
+</audio>
+
+<div id="app">
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-content">
+    <div class="kicker">Nakamoto Yuta · Solo Era</div>
+    <h1>YUTA <span>Solo Sort</span></h1>
+    <p class="subtitle">19 songs. 62 matchups. One champion.</p>
+    <div class="hero-tags">
+      <span>✦ YOUR FAVORITES</span>
+      <span>♡ YOUR RANKING</span>
+    </div>
+  </div>
+</header>
+
+<section class="card" id="sorter">
+  <div class="section-eyebrow">The song battle</div>
+  <div class="progress">
+    <span id="count">Match 1 of 62</span>
+    <span id="percent">0%</span>
+  </div>
+  <div class="bar"><i id="fill"></i></div>
+  <p class="prompt">Which one do you prefer?</p>
+  <p class="prompt-subtitle">Trust your heart. Pick your favorite.</p>
+
+  <div class="choices">
+    <button class="choice" id="a" type="button"></button>
+    <button class="choice" id="b" type="button"></button>
+  </div>
+
+  <div class="help">
+    Tap the song you love more.<br>
+    Your choices shape your personal YUTA ranking.
+  </div>
+</section>
+
+<section class="card results hidden" id="results">
+  <div class="winner">
+    <div class="winner-art" id="winner-art">
+      <div class="winner-label">🏆 Your champion 🏆</div>
+      <h2 id="winnerSong">Winning Song</h2>
+      <p class="winner-description">Your number-one YUTA solo song!</p>
+      <a id="winnerLink" class="winner-link"
+         href="https://www.youtube.com/" target="_blank"
+         rel="noopener noreferrer">▶ Watch on YouTube</a>
+    </div>
+  </div>
+
+  <div class="results-heading">
+    <div class="section-eyebrow">Your personal results</div>
+    <h2>Your YUTA ranking</h2>
+    <p id="summary"></p>
+  </div>
+
+  <div id="ranking"></div>
+
+  <div class="actions">
+    <button class="secondary" id="restart" type="button">↻ Sort again</button>
+    <button class="secondary" id="copy" type="button">Copy ranking</button>
+  </div>
+
+  <div class="note">
+    Fan-made sorter. Song titles and links are provided for identification.
+    Audio files are supplied by the site owner.
+  </div>
+</section>
+
+<p class="footer-note">MADE WITH ♡ FOR YUTA</p>
+</div>
+</div>
+
 <script>
+/* SONG IMAGES: declare this object only once. */
 const songImages = {
   "LAST SONG": "assets/yuta-last-song.jpg",
   "Off The Mask": "assets/yuta-off-the-mask.jpg",
@@ -22,6 +475,7 @@ const songImages = {
   "Dreams Never Sleep": "assets/yuta-dreams-never-sleep.jpg"
 };
 
+/* This list was missing from the broken script. */
 const songs = Object.keys(songImages);
 
 const youtubeLinks = {
@@ -55,7 +509,7 @@ let match = 0;
 let a = null;
 let b = null;
 
-// MUSIC PLAYER
+/* MUSIC PLAYER */
 const bgMusic = $("yuta-background");
 const winnerMusic = $("yuta-winner");
 const musicToggle = $("music-toggle");
@@ -79,7 +533,6 @@ async function playBackgroundMusic() {
 
   try {
     await bgMusic.play();
-
     if (musicEnabled && !winnerTrackActive) {
       updateMusicButton(true, "YUTA soundtrack");
     }
@@ -96,11 +549,10 @@ musicToggle.addEventListener("click", async () => {
     winnerMusic.pause();
     winnerTrackActive = false;
     updateMusicButton(false, "Music off");
-    return;
+  } else {
+    musicEnabled = true;
+    await playBackgroundMusic();
   }
-
-  musicEnabled = true;
-  await playBackgroundMusic();
 });
 
 bgMusic.addEventListener("error", () => {
@@ -114,7 +566,6 @@ winnerMusic.addEventListener("error", () => {
 
 winnerMusic.addEventListener("ended", () => {
   winnerTrackActive = false;
-
   if (musicEnabled) {
     bgMusic.currentTime = 0;
     playBackgroundMusic();
@@ -143,7 +594,6 @@ async function playYutaWinnerMusic() {
     updateMusicButton(true, "Winner theme");
   } catch {
     winnerTrackActive = false;
-
     if (musicEnabled) {
       updateMusicButton(false, "Winner audio unavailable");
       playBackgroundMusic();
@@ -151,15 +601,13 @@ async function playYutaWinnerMusic() {
   }
 }
 
-// SONG SORTER
+/* GAME LOGIC */
 function shuffle(items) {
   const result = [...items];
-
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [result[i], result[j]] = [result[j], result[i]];
   }
-
   return result;
 }
 
@@ -178,7 +626,6 @@ function setSongCard(button, song) {
   button.setAttribute("aria-label", "Choose " + song);
 
   const image = songImages[song];
-
   button.style.backgroundImage = image
     ? `linear-gradient(0deg,rgba(15,3,8,.88),rgba(35,5,14,.12)),url("${image}")`
     : "linear-gradient(135deg,#581727,#260b13)";
@@ -208,7 +655,6 @@ function start() {
 
   $("sorter").classList.remove("hidden");
   $("results").classList.add("hidden");
-
   next();
 }
 
@@ -224,7 +670,6 @@ function next() {
     b = pool.find(song => song !== a);
   } else {
     const leastSeen = Math.min(...Object.values(appearances));
-
     const available = shuffle(
       songs.filter(song => appearances[song] <= leastSeen + 1)
     );
@@ -245,7 +690,7 @@ function next() {
   appearances[a]++;
   appearances[b]++;
 
-  // These restore the two song-choice boxes.
+  /* FIX: populate both existing choice buttons on every matchup. */
   setSongCard($("a"), a);
   setSongCard($("b"), b);
 
@@ -257,13 +702,13 @@ function next() {
 }
 
 function choose(winner, loser) {
-  const K = 40;
+  if (!winner || !loser || match >= TOTAL_MATCHUPS) return;
 
+  const K = 40;
   const expectedWinner =
     1 / (1 + Math.pow(10, (ratings[loser] - ratings[winner]) / 400));
 
   const change = K * (1 - expectedWinner);
-
   ratings[winner] += change;
   ratings[loser] -= change;
 
@@ -281,9 +726,8 @@ function finish() {
   $("winnerSong").textContent = winner;
   $("winnerLink").href = youtubeLinks[winner] || "https://www.youtube.com/";
 
-  const winnerImage = "assets/yuta-winner.jpg";
   $("winner-art").style.backgroundImage =
-    `linear-gradient(0deg,rgba(33,6,14,.82),rgba(33,6,14,.12)),url("${winnerImage}")`;
+    `linear-gradient(0deg,rgba(33,6,14,.88),rgba(33,6,14,.15)),url("assets/yuta-winner.jpg")`;
 
   $("summary").textContent =
     `You completed ${TOTAL_MATCHUPS} matchups. Your winner is ${winner}! Your songs are ranked from #1 to #19.`;
@@ -332,11 +776,10 @@ function finish() {
   $("fill").style.width = "100%";
 
   playYutaWinnerMusic();
-
-  $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("results").scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
-// BUTTONS
+/* BUTTON EVENTS */
 $("a").addEventListener("click", () => choose(a, b));
 $("b").addEventListener("click", () => choose(b, a));
 $("restart").addEventListener("click", start);
@@ -355,7 +798,6 @@ $("copy").addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(text);
     $("copy").textContent = "Copied!";
-
     setTimeout(() => {
       $("copy").textContent = "Copy ranking";
     }, 2000);
@@ -364,6 +806,8 @@ $("copy").addEventListener("click", async () => {
   }
 });
 
-// Start the game.
+/* Start only after all required elements exist. */
 start();
 </script>
+</body>
+</html>
